@@ -28,7 +28,7 @@ import com.almasb.fxgl.time.TimerAction;
 
 public class CellApp extends GameApplication{
 
-    public static final int NUM_CELLS = 10;
+    public static final int NUM_CELLS = 100;
     private static int CELL_RECT_SIZE = CellFactory.CELL_SIZE;
     private static int SPEED = 2;
     private Entity[][] map = new Entity[NUM_CELLS][NUM_CELLS];
