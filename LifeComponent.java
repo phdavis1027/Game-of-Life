@@ -64,9 +64,7 @@ public class LifeComponent extends Component{
                             neighbors++;
                         
                     }
-                }else{
-                    neighbors++;
-                }  
+                } 
             }
         }
         return neighbors;
