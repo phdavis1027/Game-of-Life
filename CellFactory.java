@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
+
 public class CellFactory implements EntityFactory {
 
     public static int CELL_SIZE = 30;
@@ -23,13 +24,12 @@ public class CellFactory implements EntityFactory {
 
     @Spawns("cell")
     public Entity newCell(SpawnData data){
+        Rectangle view;
         return entityBuilder()
                 .from(data)
                 .type(EntityType.CELL)
-                .viewWithBBox(new Rectangle(15, 15, Color.BLUE))
-                .collidable()
+                .view(new Rectangle(CELL_SIZE-2, CELL_SIZE-2, Color.BLUE))
                 .build();
-                
                 
     }
 

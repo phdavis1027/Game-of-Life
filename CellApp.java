@@ -15,13 +15,19 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import javafx.geometry.Point2D;
-
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 public class CellApp extends GameApplication{
 
     private static int NUM_CELLS = 100;
-    private static int CELL_RECT_SIZE = CellFactory.CELL_SIZE + 1;
+    private static int CELL_RECT_SIZE = CellFactory.CELL_SIZE;
+    private static int SPEED = 2;
     private Entity[][] map = new Entity[NUM_CELLS][NUM_CELLS];
 
 
@@ -41,18 +47,18 @@ public class CellApp extends GameApplication{
     @Override
     protected void initGame(){
         getGameWorld().addEntityFactory(new CellFactory());
+
+        for(int i = 0; i < NUM_CELLS; i++){
+            for(int j = 0; j < NUM_CELLS; j++){
+                    map[i][j] = spawn("cell", j*CellFactory.CELL_SIZE, i*CellFactory.CELL_SIZE);
+                    map[i][j].addComponent(new LifeComponent(map[i][j], map, SPEED, i, j));
+            }
+        }
+
     }
 
     @Override
     protected void initInput(){
         Input input = getInput();
-
-        
-        onBtnDown(MouseButton.PRIMARY, ()->{
-            double mouseX = input.getMouseXWorld();
-            double mouseY = input.getMouseYWorld();
-            spawn("cell",mouseX,mouseY);
-        });
-
     }
 }
