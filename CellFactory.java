@@ -29,6 +29,13 @@ public class CellFactory implements EntityFactory {
                 .from(data)
                 .type(EntityType.CELL)
                 .view(new Rectangle(CELL_SIZE-2, CELL_SIZE-2, Color.BLUE))
+                .onClick(e->{
+                    boolean alive = e.getComponent(LifeComponent.class).isAlive().get();
+                    e.getComponent(LifeComponent.class).isAlive().set(!alive);
+                    e.getViewComponent().setOpacity(e.getComponent(LifeComponent.class).isAlive().get() ? 1 : 0);
+                    alive = e.getComponent(LifeComponent.class).isAlive().get();
+                    System.out.println(alive);
+                })
                 .build();
                 
     }

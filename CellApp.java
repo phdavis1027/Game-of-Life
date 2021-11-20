@@ -28,7 +28,7 @@ import com.almasb.fxgl.time.TimerAction;
 
 public class CellApp extends GameApplication{
 
-    public static final int NUM_CELLS = 100;
+    public static final int NUM_CELLS = 10;
     private static int CELL_RECT_SIZE = CellFactory.CELL_SIZE;
     private static int SPEED = 2;
     private Entity[][] map = new Entity[NUM_CELLS][NUM_CELLS];
@@ -51,16 +51,23 @@ public class CellApp extends GameApplication{
     protected void initGame(){
         getGameWorld().addEntityFactory(new CellFactory());
 
+
+        go = getGameTimer().runAtInterval(()->{
+            LifeComponent.checking.set(true);
+        },Duration.seconds(2));
+
+        go.pause(); 
+
         for(int i = 0; i < NUM_CELLS; i++){
             for(int j = 0; j < NUM_CELLS; j++){
                     map[i][j] = spawn("cell", j*CellFactory.CELL_SIZE, i*CellFactory.CELL_SIZE);
                     map[i][j].addComponent(new LifeComponent(map[i][j], map, SPEED, i, j));
+                    map[i][j].getViewComponent().setOpacity(0);   
+                    System.out.println(map[i][j].getComponent(LifeComponent.class).isAlive().get());
+ 
             }
         }
         
-        go = getGameTimer().runAtInterval(()->{
-            LifeComponent.checking.set(true);
-        },Duration.seconds(2));
 
     }
 
@@ -68,10 +75,12 @@ public class CellApp extends GameApplication{
     protected void initInput(){
         Input input = getInput();
 
-        onKey(KeyCode.E, ()->{
+        onKeyDown(KeyCode.E, ()->{
             if(go.isPaused()){
+                System.out.print("resumed");
                 go.resume();
             }else{
+                System.out.println("paused");
                 go.pause();
             }
         });

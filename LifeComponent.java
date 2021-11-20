@@ -6,72 +6,99 @@ import javafx.util.Duration;
 import java.awt.Point;
 import javafx.scene.paint.Color;
 import static com.almasb.fxgl.dsl.FXGL.*;
-
+import java.lang.Math;
+import java.util.Arrays;
 
 
 
 
 public class LifeComponent extends Component{
 
-    SimpleBooleanProperty alive;
+    public SimpleBooleanProperty alive;
     Entity[][] map;
+    static boolean[][] boolMap;
     Point pos;
     int speed;
+    int i;
+    int j;
     Entity cell;
-    static int it = 0;
+    public static volatile int its = 0;
     public static SimpleBooleanProperty checking = new SimpleBooleanProperty(false);
 
 
 
-    public LifeComponent(Entity cell, Entity[][] map, int speed, int x, int y){
+    public LifeComponent(Entity cell, Entity[][] map, int speed, int i, int j){
         this.cell = cell;
         alive = new SimpleBooleanProperty(false);
         this.map = map;
         this.speed = speed;
-        pos = new Point(x, y);
+        this.i = i;
+        this.j = j;
     }
 
     @Override
     public void onUpdate(double tpf){
-
         if(checking.get()){
-            it++;
-            int x = (int) pos.getX();
-            int y = (int) pos.getY();
-            int neighbors = getNeighbourCount(x, y);
-            System.out.println(it);
+            its++;
+            if(boolMap == null){
+                boolMap = new boolean[map.length][map[0].length];
+            }
+            
+            int neighbors = getNeighbourCount(this.i, this.j);
 
-            if(alive.get()){
-                alive = new SimpleBooleanProperty(!(neighbors <= 1 || neighbors >= 4)); 
+            boolean aliveNextTurn;
+
+            if(cell.getComponent(LifeComponent.class).isAlive().get()){
+                System.out.printf("A live cell was found at (%d, %d)\n",this.j,this.i);
+                aliveNextTurn = (!(neighbors <= 1 || neighbors >= 4)); 
+                System.out.printf("So this cell is alive : %b\n", aliveNextTurn);
             }else{
-                alive = new SimpleBooleanProperty(neighbors == 3);
+                System.out.printf("A dead cell was found at (%d, %d)\n", this.j, this.i);
+                aliveNextTurn = (neighbors == 3);
+                System.out.printf("So this cell is alive : %b\n",aliveNextTurn);
             }
 
-            cell.getViewComponent().setOpacity(alive.get() ? 1 : 0);   
+
+            boolMap[this.i][this.j] = aliveNextTurn;
+
+            if(its == Math.pow(CellApp.NUM_CELLS,2)){
+                its = 0;
+                checking.set(false);    
+                for(int i = 0; i < CellApp.NUM_CELLS; i++){
+                    for(int j = 0; j < CellApp.NUM_CELLS; j++){
+
+                        map[i][j].getComponent(LifeComponent.class).isAlive().set(boolMap[i][j]); 
+                        map[i][j].getViewComponent().setOpacity(map[i][j].getComponent(LifeComponent.class).isAlive().get() ? 1 : 0);
+
+                    }
+                }
+                boolMap = null;
+            }
         }
-        if((int) pos.getX() == CellApp.NUM_CELLS -1 && (int) pos.getY() == CellApp.NUM_CELLS - 1){
-            checking.set(false);    
-        }
+    
     }
+    
 
-
-    public int getNeighbourCount (int x, int y){
+    public int getNeighbourCount (int i, int j){
 
         int neighbors = 0;
 
-        for(int i = y - 1; i <= y + 1; ++i){
-            for (int j = x - 1; j <= x + 1; ++j){
-                if (i < map.length && i >=0 && j < map.length && j >= 0){
-                    
-                    if(i != y || j != x){
-                        
-                        if (map[i][j].getComponent(LifeComponent.class).isAlive().get())
+        
+        for(int y= i- 1; y <= i + 1; y++){
+            for(int x = j - 1; x  <= j + 1; x++){
+                if(y != i || j != x){
+                    if(x < CellApp.NUM_CELLS && x >= 0 && y < CellApp.NUM_CELLS && y >= 0){
+                        if(map[y][x].getComponent(LifeComponent.class).isAlive().get()){
                             neighbors++;
-                        
+                        }
                     }
-                } 
+                }
             }
         }
+
+                        
+                        
+        System.out.println(neighbors);
         return neighbors;
     }
 
