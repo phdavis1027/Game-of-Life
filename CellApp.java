@@ -23,13 +23,16 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import com.almasb.fxgl.time.TimerAction;
+
+
 public class CellApp extends GameApplication{
 
-    private static int NUM_CELLS = 100;
+    public static final int NUM_CELLS = 100;
     private static int CELL_RECT_SIZE = CellFactory.CELL_SIZE;
     private static int SPEED = 2;
     private Entity[][] map = new Entity[NUM_CELLS][NUM_CELLS];
-
+    TimerAction go;
 
     public static void main(String[] args){
         launch(args);
@@ -54,11 +57,25 @@ public class CellApp extends GameApplication{
                     map[i][j].addComponent(new LifeComponent(map[i][j], map, SPEED, i, j));
             }
         }
+        
+        go = getGameTimer().runAtInterval(()->{
+            LifeComponent.checking.set(true);
+        },Duration.seconds(2));
 
     }
 
     @Override
     protected void initInput(){
         Input input = getInput();
+
+        onKey(KeyCode.E, ()->{
+            if(go.isPaused()){
+                go.resume();
+            }else{
+                go.pause();
+            }
+        });
+
+
     }
 }

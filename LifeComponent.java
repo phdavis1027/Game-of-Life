@@ -4,8 +4,9 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.util.Duration;
 import java.awt.Point;
-import com.almasb.fxgl.dsl.FXGL;
 import javafx.scene.paint.Color;
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 
 
 
@@ -17,8 +18,9 @@ public class LifeComponent extends Component{
     Point pos;
     int speed;
     Entity cell;
+    static int it = 0;
+    public static SimpleBooleanProperty checking = new SimpleBooleanProperty(false);
 
-    public static final LocalTimer lifeTimer = FXGL.newLocalTimer();
 
 
     public LifeComponent(Entity cell, Entity[][] map, int speed, int x, int y){
@@ -32,11 +34,12 @@ public class LifeComponent extends Component{
     @Override
     public void onUpdate(double tpf){
 
-        if(lifeTimer.elapsed(Duration.seconds(speed))){
+        if(checking.get()){
+            it++;
             int x = (int) pos.getX();
             int y = (int) pos.getY();
             int neighbors = getNeighbourCount(x, y);
-            System.out.println(neighbors);
+            System.out.println(it);
 
             if(alive.get()){
                 alive = new SimpleBooleanProperty(!(neighbors <= 1 || neighbors >= 4)); 
@@ -44,9 +47,11 @@ public class LifeComponent extends Component{
                 alive = new SimpleBooleanProperty(neighbors == 3);
             }
 
-            cell.getViewComponent().setOpacity(alive.get() ? 1 : 0);       
+            cell.getViewComponent().setOpacity(alive.get() ? 1 : 0);   
         }
-
+        if((int) pos.getX() == CellApp.NUM_CELLS -1 && (int) pos.getY() == CellApp.NUM_CELLS - 1){
+            checking.set(false);    
+        }
     }
 
 
